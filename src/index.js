@@ -1,17 +1,18 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-
+import React from './react'
+import ReactDOM from 'react-dom'
+/**
+ * React 自定义组件
+ * 1.自定义的组件首字母大写；
+ * 2.组件使用前先定义
+ * 3.组件需要返回并且只能返回一个根元素 
+ * @param {*} props 
+ */
+function ReactTest(props) {
+  return (<div className='title' style={{ background: 'pink', color: 'purple' }}>
+    <span>{props.name}</span>
+  </div>)
+}
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <ReactTest name='前端了了liaoliao' />,
   document.getElementById('root')
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
