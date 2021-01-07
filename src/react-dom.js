@@ -54,10 +54,12 @@ function createDOM(vdom) {
  * @param {*} vdom 类型为自定义函数组件的虚拟DOM
  */
 function momentFunctionComponent(vdom) {
-
+    let { type: FunctionComponent, props } = vdom
+    let renderVdom = FunctionComponent(props)
+    return createDOM(renderVdom)
 }
 /**
- * 
+ * 遍历数组
  * @param {*} childrenVdom 子类们的虚拟dom
  * @param {*} parentDOM 父类的真实DOM
  */

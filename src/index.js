@@ -12,6 +12,7 @@ function ReactTest(props) {
     <span>{props.name}</span>
   </div>)
 }
+
 ReactDOM.render(
   <ReactTest name='前端了了liaoliao' />,
   document.getElementById('root')
