@@ -12,6 +12,9 @@ function ReactTest(props) {
     <span>{props.name}</span>
   </div>)
 }
+/**
+ * 类组件和类组件的更新
+ */
 
 ReactDOM.render(
   <ReactTest name='前端了了liaoliao' />,
