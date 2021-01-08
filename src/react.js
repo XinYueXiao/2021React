@@ -1,3 +1,4 @@
+import Component from './Component'
 /**
  * 
  * @param {*} type 元素类型
@@ -15,5 +16,5 @@ function createElement(type, config, children) {
         props
     }
 }
-const React = { createElement }
+const React = { createElement, Component }
 export default React 
