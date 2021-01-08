@@ -12,11 +12,8 @@ class Component {
     setState(partialState) {
         let state = this.state
         this.state = { ...state, ...partialState }
-        let newVdom = this.render()
+        let newVdom = this.render()//调取子类的render方法
         updateClassComponent(this, newVdom)
-    }
-    render() {
-        throw new Error('抽象方法，需子类实现')
     }
 }
 /**
