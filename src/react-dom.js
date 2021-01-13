@@ -46,7 +46,6 @@ export function createDOM(vdom) {
     } else if (Array.isArray(props.children)) {
         reconcileChildren(props.children, dom)
     } else {
-        console.log('baocuo');
         dom.textContent = props.children ? props.children.toString() : ''
     }
     // vdom.dom = dom

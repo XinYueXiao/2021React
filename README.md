@@ -108,8 +108,9 @@ function createElement(type, config, children) {
 const React = { createElement }
 export default React 
 ```
-## ReactDOM之render源码解析
+## ReactDOM之render源码分析
 > 想要了解render源码，必须清楚render的目的是把虚拟dom转换为真实DOM的过程。
+### 原生组件渲染处理
 ![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e95e1a107d65429b98050ce54b053743~tplv-k3u1fbpfcp-watermark.image)
 ```js
 /**
@@ -146,21 +147,19 @@ function createDOM(vdom) {
     //使用虚拟DOM的属性更新刚创建出来的真实DOM的属性
     updateProps(dom, props)
     //在这里处理props.children属性
-    if (props && props.children) {
-        if (typeof props.children === 'string' || typeof props.children === 'number') {
-            //如果只有一个子类，并且是数字或者字符串
-            dom.textContent = props.children
-        } else if (typeof props.children === 'object' && props.children.type) {
-            //如果只有一个子类，并且是虚拟dom元素
-            render(props.children, dom)
-            //如果是数组
-        } else if (Array.isArray(props.children)) {
-            reconcileChildren(props.children, dom)
-        } else {
-            document.textContent = props.children ? props.children.toString() : ''
-        }
+    if (typeof props.children === 'string' || typeof props.children === 'number') {
+        //如果只有一个子类，并且是数字或者字符串
+        dom.textContent = props.children
+    } else if (typeof props.children === 'object' && props.children.type) {
+        //如果只有一个子类，并且是虚拟dom元素
+        render(props.children, dom)
+        //如果是数组
+    } else if (Array.isArray(props.children)) {
+        reconcileChildren(props.children, dom)
+    } else {
+        console.log('baocuo');
+        dom.textContent = props.children ? props.children.toString() : ''
     }
-    // vdom.dom = dom
     return dom
 }
 /**
@@ -179,7 +178,7 @@ function momentFunctionComponent(vdom) {
  */
 function reconcileChildren(childrenVdom, parentDOM) {
     for (let i = 0; i < childrenVdom.length; i++) {
-        let childVdom = createDOM(childrenVdom[i])
+        let childVdom = childrenVdom[i]
         render(childVdom, parentDOM)
     }
 }
@@ -204,3 +203,73 @@ function updateProps(dom, newProps) {
 const ReactDOM = { render }
 export default ReactDOM
 ```
+### React 类组件渲染
+#### 首先我们要创建一个React class需要继承的类声明
+
+```js
+import { createDOM } from './react-dom'
+class Component {
+    static isReactComponent = true
+    constructor(props) {
+        this.props = props
+        this.state = {}
+    }
+    
+}
+export default Component
+```
+#### 添加处理此类的方法
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ecbb03ac6f2d4cdfac468db8c32e659a~tplv-k3u1fbpfcp-watermark.image)
+#### 在判断是函数后，根据创建类时的添加的 `isReactComponent` 参数判断
+```js
+if (typeof type === 'function') {//自定义函数组件
+        if (type.isReactComponent) {//类组件
+            return mountClassComponent(vdom)
+        } else {//函数组件
+            return momentFunctionComponent(vdom)
+        }
+} 
+```
+
+#### 处理类的方法 `mountClassComponent`
+```js
+/**
+ * 创建类组件实例
+ * 调用类组件实例的render方法获得返回的虚拟DOM（react元素）
+ * 把返回的虚拟DOM转成真实DOM进行挂载
+ * @param {Component} vdom 类型为类组件的虚拟DOM
+ */
+function mountClassComponent(vdom) {
+    //解构类的定义及类的属性
+    let { type, props } = vdom
+    //创建类的实例
+    let classInstance = new type(props)
+    //调用实例的render方法返回要渲染的虚拟DOM对象
+    let renderVdom = classInstance.render()
+    //根据虚拟DOM对象创建真实DOM对象
+    let dom = createDOM(renderVdom)
+    //为以后类组件的更新，把真实DOM挂载到了类的实例上
+    classInstance.dom = dom
+    return dom
+}
+```
+#### 页面测试
+```js
+class ReactComponent extends React.Component {
+  render() {
+    return (
+      <div>
+        <p>测试React类是否展示</p>
+        <p>{this.props.name}</p>
+      </div>
+
+    )
+  }
+}
+ReactDOM.render(
+  <ReactComponent name='前端了了liaoliao' />,
+  document.getElementById('root')
+);
+```
+#### 页面展示
+![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f74e95d3d8944217a14998d5f41b9a34~tplv-k3u1fbpfcp-watermark.image)
